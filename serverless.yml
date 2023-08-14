@@ -1,0 +1,112 @@
+service: card-validation-ms
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+
+vpc:
+  vpcId: vpc-0996c7b5a02bc5940
+  securityGroupIds:
+    - sg-0941d62c5ec066a5d # ID de tu grupo de seguridad
+  subnetIds:
+    - subnet-077339f2727eec33d # ID de tus subredes 
+custom:
+  dotenv:
+    path: .env
+    include:
+      - API_KEY
+      - REDIS_HOST
+      - REDIS_KEY
+      - REDIS_EXPIRATION
+
+package:
+  individually: true
+
+functions:
+  createToken:
+    handler: dist/src/controller/card/handler.createToken
+    timeout: 300
+    events:
+      - http:
+          path: card/create-token
+          method: post
+          request:
+            schemas:
+              application/json: ${file(models/createTokenRequestBody.json)}
+          cors:
+            origin: "*"
+            headers:
+              - X-Api-Key
+    # environment:
+    #   API_KEY: "pok123opkwqopkdwqok321"
+    #   REDIS_HOST: "localhost"
+    #   REDIS_PORT: 6379      
+    #   REDIS_KEY: "cards"
+    #   REDIS_EXPIRATION: 900000     
+    #   REDIS_IS_TEST: false
+
+  getCard:
+    handler: dist/src/controller/card/handler.getCard
+    timeout: 300
+    events:
+      - http:
+          path: card/get-card
+          method: get
+          cors:
+            origin: "*"
+            headers:
+              - X-Api-Key
+    # environment:
+    #   API_KEY: "pok123opkwqopkdwqok321"
+    #   REDIS_HOST: "localhost"
+    #   REDIS_PORT: 6379      
+    #   REDIS_KEY: "cards"
+    #   REDIS_EXPIRATION: 900000     
+    #   REDIS_IS_TEST: false
+
+          # documentation:
+            # summary: 'create-token'
+            # description: 'Genera un y devuelve un token en base a los parametros recibidos en el body.'
+            # requestHeaders:
+            #   - name: 'X-Api-Key'
+            #     description: 'Api Key unico y necesario para todos los endpoints.'
+            #     schema:
+            #       type: 'string'
+            # requestBody:
+            #   description: 'Cuerpo de la solicitud'
+            #   content:
+            #     application/json:
+            #       schema:
+            #         type: object
+            #         properties:
+            #           email:
+            #             type: string
+            #             description: 'Email del usuario de tarjeta'
+            #             example: 'kevinsalazar30@gmail.com'
+            #           card_number:
+            #             type: string
+            #             description: 'Numero de la tarjeta'
+            #             example: '1234567891234567'
+            #           cvv:
+            #             type: string
+            #             description: 'Clave cvv de la tarjeta'
+            #             example: '123'
+            #           expiration_year:
+            #             type: string
+            #             description: 'Año de expiración de la tarjeta'
+            #             example: '1992'
+            #           expiration_month:
+            #             type: string
+            #             description: 'Mes de expiración de la tarjeta'
+            #             example: '09'
+            #         required:
+            #           - email
+            #           - card_number
+            #           - cvv
+            #           - expiration_year
+            #           - expiration_month
+            #   required: true
+plugins:
+  - serverless-offline
+  - serverless-dotenv-plugin
