@@ -21,7 +21,7 @@ Prueba tecnica de validacion y generación de token card.
 
 ## Instalación
 
-1. Clona este repositorio: `git clone card-validation-ms`
+1. Clona este repositorio: `git clone https://github.com/zalvarez23/card-validation-ms.git`
 2. Navega a la carpeta del proyecto: `cd card-validation-ms`
 3. Instala las dependencias: `npm install`
 
